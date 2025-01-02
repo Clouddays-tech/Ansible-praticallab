@@ -1,0 +1,36 @@
+---
+- hosts: multi
+  become: true
+  vars_files:
+    - var.yml
+
+  roles:
+    - role:  andrewrothstein.terraform
+      when: "'cloudgear' in group_names"
+
+  pre_tasks:
+    - import_tasks: tasks/pretasks/main.yml
+
+  tasks:
+  - import_tasks: tasks/nodejs/main.yml
+    when:  "'app' in group_names"
+    
+  - import_tasks: tasks/zsh/main.yml
+    when: "'cloudgear' in group_names"
+
+  - name: Install Microsoft Azure CLI
+    apt:
+      # name: azure-cli=2.60.0-1~{{ansible_distribution_release}}
+      name: azure-cli
+      state: present
+      update_cache: yes
+    when: "'cloudgear' in group_names"
+
+  - name: Install Kubectl
+    snap:
+      name: kubectl
+      classic: yes
+    when: "'cloudgear' in group_names"
+
+
+

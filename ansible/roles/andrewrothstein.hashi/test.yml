@@ -1,0 +1,42 @@
+---
+# ensure the role can be included as a meta dependency without ill consequence
+- name: Testing andrewrothstein.hashi default no apps
+  hosts: all
+  roles:
+    - role: '{{ playbook_dir }}'
+- name: Testing andrewrothstein.hashi with simple apps/versions
+  hosts: all
+  vars:
+    hashi_apps:
+      - name: consul-template
+        ver: 0.37.4
+      - name: consul
+        ver: 1.18.1
+      - name: vault
+        ver: 1.16.1
+  roles:
+    - role: '{{ playbook_dir }}'
+- name: Testing andrewrothstein.hashi with apps with meta
+  hosts: all
+  vars:
+    hashi_apps:
+      - name: consul
+        ver: 1.18.1
+        meta: ent
+      - name: vault
+        ver: 1.16.1
+        meta: ent
+  roles:
+    - role: '{{ playbook_dir }}'
+- name: Testing andrewrothstein.hashi with apps with empty meta
+  hosts: all
+  vars:
+    hashi_apps:
+      - name: consul
+        ver: 1.18.1
+        meta: ''
+      - name: vault
+        ver: 1.16.1
+        meta: ''
+  roles:
+    - role: '{{ playbook_dir }}'

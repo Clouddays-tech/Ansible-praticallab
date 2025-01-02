@@ -1,0 +1,62 @@
+---
+- import_tasks: /vagrant/ansible/roles/geerlingguy.nodejs/tasks/main.yml
+
+# - name: Install Forever NPM package
+#   community.general.npm: name=forever global=true state=present
+
+- name: Install NPM Forever
+  command:
+    cmd: npm install forever -g
+    creates: /usr/bin/forever 
+  become: yes
+
+- name: Ensure Node.js app folder exists.
+  file: "path={{ node_apps_location }} state=directory"
+
+- name: Copy example Node.js app to server.
+  copy: "src=app dest={{ node_apps_location }}"
+
+- name: Install app dependencies defined in package.json.
+  npm: "path={{ node_apps_location }}/app"
+
+- name: Check list of running Node.js apps.
+  command: /usr/bin/forever list
+  register: forever_list
+  changed_when: false
+
+- name: Start example Node.js app.
+  command: "/usr/bin/forever start {{ node_apps_location }}/app/app.js"
+  # when: "forever_list.stdout.find(node_apps_location + '/app/app.js') == -1"
+ 
+
+
+
+# - hosts: all
+#   become: true
+
+  # vars:
+  #   node_apps_location: /usr/local/opt/node
+
+  # roles:
+  #   - node
+
+  # tasks:
+    # - import_tasks: tasks/main.yml
+
+    # - name: Ensure Node.js app folder exists.
+    #   file: "path={{ node_apps_location }} state=directory"
+
+    # - name: Copy example Node.js app to server.
+    #   copy: "src=app dest={{ node_apps_location }}"
+
+    # - name: Install app dependencies defined in package.json.
+    #   npm: "path={{ node_apps_location }}/app"
+
+    # - name: Check list of running Node.js apps.
+    #   command: /usr/bin/forever list
+    #   register: forever_list
+    #   changed_when: false
+
+    # - name: Start example Node.js app.
+    #   command: "/usr/bin/forever start {{ node_apps_location }}/app/app.js"
+    #   when: "forever_list.stdout.find(node_apps_location + '/app/app.js') == -1"

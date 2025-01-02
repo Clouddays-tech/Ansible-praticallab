@@ -1,0 +1,74 @@
+---
+- name: Ensure dependencies are present.
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - python3-debian
+      - gnupg2
+    state: present
+
+- name: Ensure the folder exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0700'  # Optional: set folder permissions (if needed)
+
+- name: Find Distro name
+  shell: lsb_release -cs
+  register: distro_name
+
+- name: Download NodeSource's GPG key
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /etc/apt/keyrings/nodesource.key
+    mode: '0444'
+  register: node_signing_key
+ 
+- name: Convert the NodeSource GPG key to a format that APT accepts
+  ansible.builtin.command:
+    cmd: "gpg --dearmor /etc/apt/keyrings/nodesource.key"
+    creates: /etc/apt/keyrings/nodesource.key.gpg
+  become: true
+
+
+# - name: Debug Node.js version
+#   debug:
+#     msg: "Node.js version: {{ nodejs_version }}"
+
+# - name: Debug Distro name
+#   debug:
+#     msg: "Distro name: {{ distro_name.stdout.strip() }}"
+
+
+- name: Download NodeSource's GPG key
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/setup_current.x
+    dest: /tmp/nodejs.sh
+    mode: u+rwx,g+rwx
+
+
+- name: Install nodejs GPG key
+  command:
+    cmd:  bash /tmp/nodejs.sh
+    creates: /usr/bin/node
+  become: true
+
+
+- name: Ensure Node.js and npm are installed.
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+
+# - name: Install latest npm
+#   shell: |
+#     CURRENT_NPM_VERSION=$(npm -v)
+#     LATEST_NPM_VERSION=$(npm show npm version)
+#     if [ "$CURRENT_NPM_VERSION" != "$LATEST_NPM_VERSION" ]; then
+#       npm install -g npm@latest
+#     fi
+#   become: true
+
+# - name: Install nodejs bash
+#   command:
+#     cmd:  npm install -g npm@latest
+#   become: true

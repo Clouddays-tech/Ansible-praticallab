@@ -1,0 +1,12 @@
+---
+roles:
+  - name: andrewrothstein.terraform
+    version: v3.0.39
+
+  - name: andrewrothstein.hashi
+    version: v1.0.17
+
+  - name: andrewrothstein.unarchivedeps
+
+  - name: geerlingguy.nodejs
+

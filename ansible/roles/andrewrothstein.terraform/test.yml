@@ -1,0 +1,14 @@
+---
+- name: Testing andrewrothstein.terraform
+  hosts: all
+  tasks:
+    - name: Installing andrewrothstein.terraform
+      ansible.builtin.include_role:
+        name: '{{ playbook_dir }}'
+    - name: Executing 'terraform --version'
+      ansible.builtin.command: /usr/local/bin/terraform --version
+      changed_when: false
+      register: terraform_test_output
+    - name: Output from 'terraform --version'
+      ansible.builtin.debug:
+        msg: '{{ terraform_test_output.stdout }}'

@@ -1,0 +1,41 @@
+    - name: Add Microsoft Package Repository Key
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+      when: "'cloudgear' in group_names"
+
+    # - name: Find Distro name
+    #   shell: lsb_release -cs
+    #   register: distro_name
+
+    #{{ ansible_distribution_release }}{{ distro_name.stdout }}
+    - name: Add Microsoft Package Repository
+      apt_repository:
+        repo: 'deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main'
+        state: present
+        update_cache: yes
+      when: "'cloudgear' in group_names"
+
+    - name:  apt-get update as a separate step
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Upgrade the OS packages
+      ansible.builtin.apt:
+        upgrade: yes
+
+    - name: Install Snap
+      package:
+        name: snapd
+      # classic: yes
+      when: "'cloudgear' in group_names"
+
+    - name: Install prerequisities
+      package: 
+        name: ['gnupg', 'software-properties-common', 'ca-certificates', 'curl', 'gnupg']
+        state: present
+      when: "'app' in group_names"
+
+    - name: Ensure firewalld is stopped (since this is a test server).
+      service: name=ufw state=stopped
+      when: "'app' in group_names"
