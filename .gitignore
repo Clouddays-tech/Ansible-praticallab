@@ -1,4 +1,5 @@
 *.retry
+!sshkey/
 sshkey/*
-.vscode
-.vagrant
+.vscode/*
+.vagrant/*
