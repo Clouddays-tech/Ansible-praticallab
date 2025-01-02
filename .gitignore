@@ -1,5 +1,6 @@
 *.retry
-sshkey/ansible_id_rsa
-sshkey/ansible_id_rsa.pub
+sshkey/*       
+!sshkey/      
+!sshkey/.gitignore 
 .vscode/*
 .vagrant/*
